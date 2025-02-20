@@ -14,7 +14,7 @@ const app = express()
 
 // middleware
 const corsOptions = {
-    origin: ['http://localhost:5173', 'http://localhost:4173'],
+    origin: ['http://localhost:5173', 'http://localhost:4173','https://task-manage-bd.web.app'],
     credentials: true,
     optionSuccessStatus: 200,
 }
