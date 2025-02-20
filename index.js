@@ -23,3 +23,11 @@ app.use(cors(corsOptions))
 app.use(express.json())
 app.use(cookieParser())
 app.use(morgan('dev'))
+
+app.get('/',(req, res)=>{
+    res.send('Hello From Task Management Server');
+})
+
+app.listen(port,()=>{
+    console.log(`Server is running on port ${port}`);
+})
