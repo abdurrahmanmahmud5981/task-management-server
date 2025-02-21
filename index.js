@@ -69,7 +69,7 @@ async function run() {
         app.post('/jwt', async (req, res) => {
             const email = req.body;
             const token = jwt.sign(email, process.env.SECRET_KEY, { expiresIn: '365d' });
-
+            console.log(token);
             res.cookie("token", token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
@@ -79,11 +79,12 @@ async function run() {
 
         // Endpoint to clear the JWT token (logout)
         app.post('/logout', async (req, res) => {
-            res.clearCookie("token", {
-                maxAge: 0,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: process.env.NODE_ENV === "production" ? "none" : "strict"
-            }).send({ success: true });
+            // Clear the token from the response cookies
+            // res.clearCookie("token", {
+            //     maxAge: 0,
+            //     secure: process.env.NODE_ENV === "production",
+            //     sameSite: process.env.NODE_ENV === "production" ? "none" : "strict"
+            // }).send({ success: true });
         });
 
 
