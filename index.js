@@ -64,12 +64,13 @@ async function run() {
         const db = client.db("tasksDB");
         // collection creation
         const tasksCollection = db.collection("tasks");
+        const usersCollection = db.collection("users");
 
         // Endpoint to generate a JWT token
         app.post('/jwt', async (req, res) => {
             const email = req.body;
             const token = jwt.sign(email, process.env.SECRET_KEY, { expiresIn: '365d' });
-            console.log(token);
+           
             res.cookie("token", token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
@@ -80,11 +81,11 @@ async function run() {
         // Endpoint to clear the JWT token (logout)
         app.post('/logout', async (req, res) => {
             // Clear the token from the response cookies
-            // res.clearCookie("token", {
-            //     maxAge: 0,
-            //     secure: process.env.NODE_ENV === "production",
-            //     sameSite: process.env.NODE_ENV === "production" ? "none" : "strict"
-            // }).send({ success: true });
+            res.clearCookie("token", {
+                maxAge: 0,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: process.env.NODE_ENV === "production" ? "none" : "strict"
+            }).send({ success: true });
         });
 
 
@@ -118,6 +119,50 @@ async function run() {
             const result = await tasksCollection.deleteOne(filter);
             res.send(result);
         })
+
+
+        // USER API
+
+        // get a user by email
+        app.get('/users/:email', verifyToken, async (req, res) => {
+            const email = req.params.email
+            const user = await usersCollection.findOne({ email: email })
+            if (!user) {
+                return res.status(404).send({ message: 'User not found.' })
+            }
+            res.send(user)
+        })
+        // save  a user in db 
+        app.post('/users/:email',  async (req, res) => {
+            const email = req.params.email
+            const user = req.body
+            console.log(user);
+            // check if user exists in db
+            const isExist = await usersCollection.findOne({ email: email })
+            if (isExist) {
+                return res.send(isExist)
+            }
+         
+            const result = await usersCollection.insertOne({name:user?.name,image:user?.image,email:user?.email})
+            res.send(result)
+          
+        })
+        // update user info in db 
+        app.patch('/users/:id', async (req, res) => {
+            const id = new ObjectId(req.params.id)
+            const updatedUser = req.body
+            const result = await usersCollection.updateOne(
+                { _id: id },
+                {
+                    $set: {
+                        name: updatedUser.name,
+                        image: updatedUser.image
+                    }
+                }
+            )
+            res.send(result)
+        })
+
 
     } catch (error) {
         console.log(error.message);
