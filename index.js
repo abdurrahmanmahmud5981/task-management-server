@@ -43,7 +43,9 @@ const verifyToken = (req, res, next) => {
 
 // set up mongodb
 
-const uri = `mongodb://localhost:27017`
+// const uri = `mongodb://localhost:27017`
+
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.fxybk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 const client = new MongoClient(uri, {
     serverApi: {
@@ -56,9 +58,9 @@ const client = new MongoClient(uri, {
 // Connect to the MongoDB server
 async function run() {
     try {
-        await client.connect();
-        // // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
+        // await client.connect();
+        // // // Send a ping to confirm a successful connection
+        // await client.db("admin").command({ ping: 1 });
 
         // database creation 
         const db = client.db("tasksDB");
